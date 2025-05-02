@@ -123,4 +123,18 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+     /*
+    |--------------------------------------------------------------------------
+    | Theme Change
+    |--------------------------------------------------------------------------
+    |
+    | this for changing theme dark or white
+    |
+    | Supported drivers: "dark", ""
+    |
+    */
+
+    'theme' => env('THEME',''),
+
+
 ];
