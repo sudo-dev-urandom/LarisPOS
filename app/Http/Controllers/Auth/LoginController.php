@@ -26,9 +26,16 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            $level = Auth::user()->level;
+            $user = Auth::user();
 
-            return match ($level) {
+            if (!$user->is_active || !$user->company?->is_active) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Your account or company is not active.',
+                ]);
+            }
+
+            return match ($user->level) {
                 'admin' => redirect()->intended('/admin/dashboard'),
                 'cashier' => redirect()->intended('/cashier'),
                 default => redirect()->intended('/home'),
