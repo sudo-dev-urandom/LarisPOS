@@ -9,7 +9,8 @@ class InventoryController extends Controller
 {
     public function index()
     {
-        return response()->json(Inventory::all());
+        $inventories = Inventory::all();
+        return view('cashier.index', compact('inventories'));
     }
 
     public function store(Request $request)
