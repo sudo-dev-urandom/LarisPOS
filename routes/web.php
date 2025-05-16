@@ -14,7 +14,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:cashier'])->group(function () {
-    Route::get('/cashier', fn () => view('cashier.index'));
     Route::resource('inventories', InventoryController::class);
 });
 Route::get('/', function () {
