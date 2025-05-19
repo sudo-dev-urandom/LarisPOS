@@ -142,7 +142,15 @@
                                 <!-- BEGIN card -->
                                 <div class="card h-100">
                                     <div class="card-body h-100 p-1">
-                                        <a href="#" class="pos-product" data-bs-toggle="modal" data-bs-target="#modalPosItem">
+                                        <a href="#" class="pos-product"
+                                            data-id="{{ $item->id }}"
+                                            data-name="{{ $item->name }}"
+                                            data-price="{{ $item->price }}"
+                                            data-description="{{ $item->description }}"
+                                            data-image="{{ asset($item->images) }}"
+                                            onclick="showProductModal(this)"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalPosItem">
                                             <div class="img" style="background-image: url('{{ asset($item->images) }}')"></div>
                                             <div class="info">
                                                 <div class="title">{{ $item->name }}&reg;</div>
@@ -161,8 +169,6 @@
                                 <!-- END card -->
                             </div>
                             @endforeach
-
-
                         </div>
                     </div>
                 </div>
@@ -413,39 +419,39 @@
                     <a href="#" data-bs-dismiss="modal" class="btn-close position-absolute top-0 end-0 m-4"></a>
                     <div class="modal-pos-product">
                         <div class="modal-pos-product-img">
-                            <div class="img" style="background-image: url(assets/img/pos/product-1.jpg)"></div>
+                            <div class="img" id="modalProductImage" style="background-image: url(assets/img/pos/product-1.jpg)"></div>
                         </div>
                         <div class="modal-pos-product-info">
-                            <div class="h4 mb-2">Grill Chicken Chop</div>
-                            <div class="text-inverse text-opacity-50 mb-2">
+                            <div class="h4 mb-2" id="modalProductName">Grill Chicken Chop</div>
+                            <div class="text-inverse text-opacity-50 mb-2" id="modalProductDescription">
                                 chicken, egg, mushroom, salad
                             </div>
-                            <div class="h4 mb-3">$10.99</div>
+                            <div class="h4 mb-3" id="modalProductPrice">$10.99</div>
                             <div class="d-flex mb-3">
-                                <a href="#" class="btn btn-outline-theme"><i class="fa fa-minus"></i></a>
-                                <input type="text" class="form-control w-50px fw-bold mx-2 bg-inverse bg-opacity-15 border-0 text-center" name="qty" value="1">
-                                <a href="#" class="btn btn-outline-theme"><i class="fa fa-plus"></i></a>
+                                <a href="#" class="btn btn-outline-theme" id="modalDecreaseQty"><i class="fa fa-minus"></i></a>
+                                <input type="text" class="form-control w-50px fw-bold mx-2 bg-inverse bg-opacity-15 border-0 text-center" id="modalProductQty" name="qty" value="1">
+                                <a href="#" class="btn btn-outline-theme" id="modalIncreaseQty"><i class="fa fa-plus"></i></a>
                             </div>
                             <hr class="mx-n4">
                             <div class="mb-2">
                                 <div class="fw-bold">Size:</div>
                                 <div class="option-list">
                                     <div class="option">
-                                        <input type="radio" id="size3" name="size" class="option-input" checked>
+                                        <input type="radio" id="size3" name="size" class="option-input" value="Small" data-price="0" checked>
                                         <label class="option-label" for="size3">
                                             <span class="option-text">Small</span>
                                             <span class="option-price">+0.00</span>
                                         </label>
                                     </div>
                                     <div class="option">
-                                        <input type="radio" id="size1" name="size" class="option-input">
+                                        <input type="radio" id="size1" name="size" class="option-input" value="Large" data-price="3">
                                         <label class="option-label" for="size1">
                                             <span class="option-text">Large</span>
                                             <span class="option-price">+3.00</span>
                                         </label>
                                     </div>
                                     <div class="option">
-                                        <input type="radio" id="size2" name="size" class="option-input">
+                                        <input type="radio" id="size2" name="size" class="option-input" value="Medium" data-price="1.5">
                                         <label class="option-label" for="size2">
                                             <span class="option-text">Medium</span>
                                             <span class="option-price">+1.50</span>
@@ -457,28 +463,28 @@
                                 <div class="fw-bold">Add On:</div>
                                 <div class="option-list">
                                     <div class="option">
-                                        <input type="checkbox" name="addon[sos]" value="true" class="option-input" id="addon1">
+                                        <input type="checkbox" name="addon[sos]" value="More BBQ sos" class="option-input addon-checkbox" id="addon1" data-price="0">
                                         <label class="option-label" for="addon1">
                                             <span class="option-text">More BBQ sos</span>
                                             <span class="option-price">+0.00</span>
                                         </label>
                                     </div>
                                     <div class="option">
-                                        <input type="checkbox" name="addon[ff]" value="true" class="option-input" id="addon2">
+                                        <input type="checkbox" name="addon[ff]" value="Extra french fries" class="option-input addon-checkbox" id="addon2" data-price="1">
                                         <label class="option-label" for="addon2">
                                             <span class="option-text">Extra french fries</span>
                                             <span class="option-price">+1.00</span>
                                         </label>
                                     </div>
                                     <div class="option">
-                                        <input type="checkbox" name="addon[ms]" value="true" class="option-input" id="addon3">
+                                        <input type="checkbox" name="addon[ms]" value="Mushroom soup" class="option-input addon-checkbox" id="addon3" data-price="3.5">
                                         <label class="option-label" for="addon3">
                                             <span class="option-text">Mushroom soup</span>
                                             <span class="option-price">+3.50</span>
                                         </label>
                                     </div>
                                     <div class="option">
-                                        <input type="checkbox" name="addon[ms]" value="true" class="option-input" id="addon4">
+                                        <input type="checkbox" name="addon[juice]" value="Lemon Juice (set)" class="option-input addon-checkbox" id="addon4" data-price="2.5">
                                         <label class="option-label" for="addon4">
                                             <span class="option-text">Lemon Juice (set)</span>
                                             <span class="option-price">+2.50</span>
@@ -492,7 +498,7 @@
                                     <a href="#" class="btn btn-default h4 mb-0 d-block rounded-0 py-3" data-bs-dismiss="modal">Cancel</a>
                                 </div>
                                 <div class="col-8">
-                                    <a href="#" class="btn btn-theme d-flex justify-content-center align-items-center rounded-0 py-3 h4 m-0">Add to cart <i class="bi bi-plus fa-2x ms-2 my-n3"></i></a>
+                                    <a href="#" class="btn btn-theme d-flex justify-content-center align-items-center rounded-0 py-3 h4 m-0" id="btnAddToCart">Add to cart <i class="bi bi-plus fa-2x ms-2 my-n3"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -508,10 +514,272 @@
         </div>
     </div>
 </div>
+<!-- Your order container -->
+<div class="pos-order-container">
+    <!-- Order items will be added here dynamically -->
+</div>
 <!-- END #modalPosItem -->
 @stop
 
 
 @push('pos')
 <script src="{{ asset('assets/js/demo/pos-customer-order.demo.js') }}"></script>
+<script>
+    // Store current product details
+    let currentProduct = {
+        id: null,
+        name: '',
+        price: 0,
+        description: '',
+        image: '',
+        basePrice: 0
+    };
+
+    // Show product modal with details
+    function showProductModal(element) {
+        // Store current product details for later use
+        currentProduct.id = element.getAttribute('data-id');
+        currentProduct.name = element.getAttribute('data-name');
+        currentProduct.price = parseFloat(element.getAttribute('data-price'));
+        currentProduct.basePrice = currentProduct.price; // Store original price
+        currentProduct.description = element.getAttribute('data-description');
+        currentProduct.image = element.getAttribute('data-image');
+
+        // Format price for display (using Rupiah format)
+        const formattedPrice = 'Rp' + new Intl.NumberFormat('id-ID').format(currentProduct.price);
+
+        // Update modal with product details
+        document.getElementById('modalProductName').textContent = currentProduct.name;
+        document.getElementById('modalProductDescription').textContent = currentProduct.description;
+        document.getElementById('modalProductPrice').textContent = formattedPrice;
+        document.getElementById('modalProductImage').style.backgroundImage = `url('${currentProduct.image}')`;
+
+        // Reset quantity to 1
+        document.getElementById('modalProductQty').value = '1';
+
+        // Reset all options
+        document.querySelectorAll('input[name="size"]').forEach(radio => {
+            if (radio.id === 'size3') { // Small size
+                radio.checked = true;
+            } else {
+                radio.checked = false;
+            }
+        });
+
+        document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    }
+
+    // Set up event listeners once DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Increase quantity button in modal
+        document.getElementById('modalIncreaseQty').addEventListener('click', function(e) {
+            e.preventDefault();
+            const qtyInput = document.getElementById('modalProductQty');
+            let qty = parseInt(qtyInput.value);
+            qtyInput.value = qty + 1;
+        });
+
+        // Decrease quantity button in modal
+        document.getElementById('modalDecreaseQty').addEventListener('click', function(e) {
+            e.preventDefault();
+            const qtyInput = document.getElementById('modalProductQty');
+            let qty = parseInt(qtyInput.value);
+            if (qty > 1) {
+                qtyInput.value = qty - 1;
+            }
+        });
+
+        // Handle size changes - update price
+        document.querySelectorAll('input[name="size"]').forEach(radio => {
+            radio.addEventListener('change', updateModalPrice);
+        });
+
+        // Handle addon changes - update price
+        document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateModalPrice);
+        });
+
+        // Add to cart button
+        document.getElementById('btnAddToCart').addEventListener('click', function() {
+            addCurrentItemToOrder();
+            // Hide modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalPosItem'));
+            modal.hide();
+        });
+    });
+
+    // Update the price in the modal based on selected options
+    function updateModalPrice() {
+        // Get base price
+        let totalPrice = currentProduct.basePrice;
+
+        // Add size price
+        const selectedSize = document.querySelector('input[name="size"]:checked');
+        if (selectedSize) {
+            totalPrice += parseFloat(selectedSize.getAttribute('data-price'));
+        }
+
+        // Add addon prices
+        document.querySelectorAll('.addon-checkbox:checked').forEach(checkbox => {
+            totalPrice += parseFloat(checkbox.getAttribute('data-price'));
+        });
+
+        // Update price display
+        document.getElementById('modalProductPrice').textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(totalPrice);
+    }
+
+    // Add current item from modal to order
+    function addCurrentItemToOrder() {
+        // Get current product details
+        const id = currentProduct.id;
+        const name = currentProduct.name;
+        const image = currentProduct.image;
+        const quantity = parseInt(document.getElementById('modalProductQty').value);
+
+        // Calculate final price with options
+        let totalPrice = currentProduct.basePrice;
+        let options = [];
+
+        // Add size option
+        const selectedSize = document.querySelector('input[name="size"]:checked');
+        if (selectedSize) {
+            const sizePrice = parseFloat(selectedSize.getAttribute('data-price'));
+            totalPrice += sizePrice;
+            options.push(`- size: ${selectedSize.value}`);
+        }
+
+        // Add selected addons
+        document.querySelectorAll('.addon-checkbox:checked').forEach(checkbox => {
+            const addonPrice = parseFloat(checkbox.getAttribute('data-price'));
+            totalPrice += addonPrice;
+            options.push(`- ${checkbox.value}`);
+        });
+
+        // Calculate item total
+        const itemTotal = totalPrice * quantity;
+
+        // Format prices
+        const formattedUnitPrice = 'Rp' + new Intl.NumberFormat('id-ID').format(totalPrice);
+        const formattedTotal = 'Rp' + new Intl.NumberFormat('id-ID').format(itemTotal);
+
+        // Generate unique ID for this item with options
+        const optionsKey = options.join('|');
+        const uniqueId = `${id}-${optionsKey}`;
+
+        // Check if exact same item (with same options) exists
+        const existingItem = document.querySelector(`.pos-order[data-unique-id="${uniqueId}"]`);
+
+        if (existingItem) {
+            // Update existing item quantity
+            const quantityInput = existingItem.querySelector('input[type="text"]');
+            let existingQty = parseInt(quantityInput.value);
+            let newQty = existingQty + quantity;
+            quantityInput.value = newQty.toString().padStart(2, '0');
+
+            // Update price
+            const priceElement = existingItem.querySelector('.pos-order-price');
+            priceElement.textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(totalPrice * newQty);
+        } else {
+            // Create options HTML
+            const optionsHtml = options.length > 0 ? options.join('<br>') : '';
+
+            // Create new order item
+            const orderHTML = `
+            <div class="pos-order" data-id="${id}" data-unique-id="${uniqueId}" data-price="${totalPrice}">
+                <div class="pos-order-product">
+                    <div class="img" style="background-image: url(${image})"></div>
+                    <div class="flex-1">
+                        <div class="h6 mb-1">${name}</div>
+                        <div class="small">${formattedUnitPrice}</div>
+                        <div class="small mb-2">
+                            ${optionsHtml}
+                        </div>
+                        <div class="d-flex">
+                            <a href="#" class="btn btn-outline-theme btn-sm" onclick="decreaseQuantity('${uniqueId}'); return false;"><i class="fa fa-minus"></i></a>
+                            <input type="text" class="form-control w-50px form-control-sm mx-2 bg-white bg-opacity-25 text-center" value="${quantity.toString().padStart(2, '0')}" onchange="updatePrice('${uniqueId}', this.value)">
+                            <a href="#" class="btn btn-outline-theme btn-sm" onclick="increaseQuantity('${uniqueId}'); return false;"><i class="fa fa-plus"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="pos-order-price">
+                    ${formattedTotal}
+                </div>
+            </div>
+        `;
+
+            // Append to order container
+            document.querySelector('.pos-order-container').innerHTML += orderHTML;
+        }
+
+        // Update total
+        updateOrderTotal();
+    }
+
+    function increaseQuantity(uniqueId) {
+        const orderItem = document.querySelector(`.pos-order[data-unique-id="${uniqueId}"]`);
+        const quantityInput = orderItem.querySelector('input[type="text"]');
+        let quantity = parseInt(quantityInput.value) + 1;
+        quantityInput.value = quantity.toString().padStart(2, '0');
+
+        updateItemPrice(orderItem, quantity);
+        updateOrderTotal();
+    }
+
+    function decreaseQuantity(uniqueId) {
+        const orderItem = document.querySelector(`.pos-order[data-unique-id="${uniqueId}"]`);
+        const quantityInput = orderItem.querySelector('input[type="text"]');
+        let quantity = parseInt(quantityInput.value) - 1;
+
+        if (quantity <= 0) {
+            // Remove the item if quantity becomes zero
+            orderItem.remove();
+        } else {
+            quantityInput.value = quantity.toString().padStart(2, '0');
+            updateItemPrice(orderItem, quantity);
+        }
+
+        updateOrderTotal();
+    }
+
+    function updateItemPrice(orderItem, quantity) {
+        const price = parseFloat(orderItem.getAttribute('data-price'));
+        const total = price * quantity;
+
+        const priceElement = orderItem.querySelector('.pos-order-price');
+        priceElement.textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(total);
+    }
+
+    function updatePrice(uniqueId, value) {
+        const orderItem = document.querySelector(`.pos-order[data-unique-id="${uniqueId}"]`);
+        const quantity = parseInt(value);
+
+        if (quantity <= 0) {
+            orderItem.remove();
+        } else {
+            updateItemPrice(orderItem, quantity);
+        }
+
+        updateOrderTotal();
+    }
+
+    function updateOrderTotal() {
+        // Calculate order total
+        let total = 0;
+        const orderItems = document.querySelectorAll('.pos-order');
+
+        orderItems.forEach(item => {
+            const price = parseFloat(item.getAttribute('data-price'));
+            const quantity = parseInt(item.querySelector('input[type="text"]').value);
+            total += price * quantity;
+        });
+
+        // Update total UI element if you have one
+        const totalElement = document.querySelector('.pos-total-price');
+        if (totalElement) {
+            totalElement.textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(total);
+        }
+    }
+</script>
 @endpush
