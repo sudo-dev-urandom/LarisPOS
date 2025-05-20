@@ -228,7 +228,7 @@
                                 </div>
                                 <!-- END pos-order -->
                                 <!-- BEGIN pos-order -->
-                                <div class="pos-order">
+                                <!-- <div class="pos-order">
                                     <div class="pos-order-product">
                                         <div class="img" style="background-image: url(assets/img/pos/product-8.jpg)"></div>
                                         <div class="flex-1">
@@ -258,7 +258,7 @@
                                             <a href="#" class="btn btn-outline-theme btn-sm width-100px">Yes</a>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <!-- END pos-order -->
                                 <!-- BEGIN pos-order -->
                                 <div class="pos-order">
