@@ -535,6 +535,10 @@
         basePrice: 0
     };
 
+    // Initialize order total calculation
+    let orderSubtotal = 0;
+    let taxRate = 0.06; // 6% tax rate
+
     // Show product modal with details
     function showProductModal(element) {
         // Store current product details for later use
@@ -569,10 +573,19 @@
         document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
             checkbox.checked = false;
         });
+
+        // Update price display based on default options
+        updateModalPrice();
     }
 
     // Set up event listeners once DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
+        // Clear existing order items from template
+        clearExistingOrderItems();
+
+        // Update order count
+        updateOrderCount();
+
         // Increase quantity button in modal
         document.getElementById('modalIncreaseQty').addEventListener('click', function(e) {
             e.preventDefault();
@@ -608,7 +621,17 @@
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalPosItem'));
             modal.hide();
         });
+
+        // Initialize any existing remove buttons
+        setupRemoveConfirmation();
     });
+
+    // Clear the template order items initially
+    function clearExistingOrderItems() {
+        // Get all order items except those that are part of a confirmation view
+        const orderItems = document.querySelectorAll('#newOrderTab .pos-order:not(:has(.pos-order-confirmation))');
+        orderItems.forEach(item => item.remove());
+    }
 
     // Update the price in the modal based on selected options
     function updateModalPrice() {
@@ -666,7 +689,7 @@
 
         // Generate unique ID for this item with options
         const optionsKey = options.join('|');
-        const uniqueId = `${id}-${optionsKey}`;
+        const uniqueId = `item-${id}-${optionsKey.replace(/[^a-zA-Z0-9]/g, '')}`;
 
         // Check if exact same item (with same options) exists
         const existingItem = document.querySelector(`.pos-order[data-unique-id="${uniqueId}"]`);
@@ -680,14 +703,17 @@
 
             // Update price
             const priceElement = existingItem.querySelector('.pos-order-price');
-            priceElement.textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(totalPrice * newQty);
+            priceElement.textContent = formattedTotal;
+
+            // Update data attribute for calculations
+            existingItem.setAttribute('data-quantity', newQty);
         } else {
             // Create options HTML
             const optionsHtml = options.length > 0 ? options.join('<br>') : '';
 
             // Create new order item
             const orderHTML = `
-            <div class="pos-order" data-id="${id}" data-unique-id="${uniqueId}" data-price="${totalPrice}">
+            <div class="pos-order" data-id="${id}" data-unique-id="${uniqueId}" data-price="${totalPrice}" data-quantity="${quantity}">
                 <div class="pos-order-product">
                     <div class="img" style="background-image: url(${image})"></div>
                     <div class="flex-1">
@@ -697,24 +723,28 @@
                             ${optionsHtml}
                         </div>
                         <div class="d-flex">
-                            <a href="#" class="btn btn-outline-theme btn-sm" onclick="decreaseQuantity('${uniqueId}'); return false;"><i class="fa fa-minus"></i></a>
+                            <a href="#" class="btn btn-outline-theme btn-sm btn-decrease" onclick="decreaseQuantity('${uniqueId}'); return false;"><i class="fa fa-minus"></i></a>
                             <input type="text" class="form-control w-50px form-control-sm mx-2 bg-white bg-opacity-25 text-center" value="${quantity.toString().padStart(2, '0')}" onchange="updatePrice('${uniqueId}', this.value)">
-                            <a href="#" class="btn btn-outline-theme btn-sm" onclick="increaseQuantity('${uniqueId}'); return false;"><i class="fa fa-plus"></i></a>
+                            <a href="#" class="btn btn-outline-theme btn-sm btn-increase" onclick="increaseQuantity('${uniqueId}'); return false;"><i class="fa fa-plus"></i></a>
                         </div>
                     </div>
                 </div>
                 <div class="pos-order-price">
                     ${formattedTotal}
                 </div>
+                <a href="#" class="btn-remove" onclick="showRemoveConfirmation('${uniqueId}'); return false;">
+                    <i class="bi bi-x-lg"></i>
+                </a>
             </div>
         `;
 
             // Append to order container
-            document.querySelector('.pos-order-container').innerHTML += orderHTML;
+            document.querySelector('#newOrderTab').insertAdjacentHTML('beforeend', orderHTML);
         }
 
-        // Update total
+        // Update totals
         updateOrderTotal();
+        updateOrderCount();
     }
 
     function increaseQuantity(uniqueId) {
@@ -722,6 +752,7 @@
         const quantityInput = orderItem.querySelector('input[type="text"]');
         let quantity = parseInt(quantityInput.value) + 1;
         quantityInput.value = quantity.toString().padStart(2, '0');
+        orderItem.setAttribute('data-quantity', quantity);
 
         updateItemPrice(orderItem, quantity);
         updateOrderTotal();
@@ -733,14 +764,14 @@
         let quantity = parseInt(quantityInput.value) - 1;
 
         if (quantity <= 0) {
-            // Remove the item if quantity becomes zero
-            orderItem.remove();
+            // Show confirmation instead of removing immediately
+            showRemoveConfirmation(uniqueId);
         } else {
             quantityInput.value = quantity.toString().padStart(2, '0');
+            orderItem.setAttribute('data-quantity', quantity);
             updateItemPrice(orderItem, quantity);
+            updateOrderTotal();
         }
-
-        updateOrderTotal();
     }
 
     function updateItemPrice(orderItem, quantity) {
@@ -756,29 +787,112 @@
         const quantity = parseInt(value);
 
         if (quantity <= 0) {
-            orderItem.remove();
+            showRemoveConfirmation(uniqueId);
         } else {
+            orderItem.setAttribute('data-quantity', quantity);
             updateItemPrice(orderItem, quantity);
+            updateOrderTotal();
         }
+    }
 
-        updateOrderTotal();
+    function showRemoveConfirmation(uniqueId) {
+        const orderItem = document.querySelector(`.pos-order[data-unique-id="${uniqueId}"]`);
+
+        // Create confirmation overlay if not already present
+        if (!orderItem.querySelector('.pos-order-confirmation')) {
+            const confirmationHTML = `
+            <div class="pos-order-confirmation text-center d-flex flex-column justify-content-center">
+                <div class="mb-1">
+                    <i class="bi bi-trash fs-36px lh-1"></i>
+                </div>
+                <div class="mb-2">Remove this item?</div>
+                <div>
+                    <a href="#" class="btn btn-outline-default btn-sm ms-auto me-2 width-100px btn-cancel-remove">No</a>
+                    <a href="#" class="btn btn-outline-theme btn-sm width-100px btn-confirm-remove">Yes</a>
+                </div>
+            </div>
+        `;
+
+            orderItem.insertAdjacentHTML('beforeend', confirmationHTML);
+
+            // Add event listeners for confirmation buttons
+            orderItem.querySelector('.btn-cancel-remove').addEventListener('click', function(e) {
+                e.preventDefault();
+                orderItem.querySelector('.pos-order-confirmation').remove();
+            });
+
+            orderItem.querySelector('.btn-confirm-remove').addEventListener('click', function(e) {
+                e.preventDefault();
+                orderItem.remove();
+                updateOrderTotal();
+                updateOrderCount();
+            });
+        }
+    }
+
+    function setupRemoveConfirmation() {
+        // Find any existing remove confirmations and set up their buttons
+        document.querySelectorAll('.pos-order .pos-order-confirmation').forEach(confirmation => {
+            const orderItem = confirmation.closest('.pos-order');
+
+            // No button
+            confirmation.querySelector('.btn-outline-default').addEventListener('click', function(e) {
+                e.preventDefault();
+                confirmation.remove();
+            });
+
+            // Yes button
+            confirmation.querySelector('.btn-outline-theme').addEventListener('click', function(e) {
+                e.preventDefault();
+                orderItem.remove();
+                updateOrderTotal();
+                updateOrderCount();
+            });
+        });
     }
 
     function updateOrderTotal() {
-        // Calculate order total
-        let total = 0;
-        const orderItems = document.querySelectorAll('.pos-order');
+        // Calculate order subtotal
+        let subtotal = 0;
+        const orderItems = document.querySelectorAll('#newOrderTab .pos-order');
 
         orderItems.forEach(item => {
             const price = parseFloat(item.getAttribute('data-price'));
-            const quantity = parseInt(item.querySelector('input[type="text"]').value);
-            total += price * quantity;
+            const quantity = parseInt(item.getAttribute('data-quantity') || item.querySelector('input[type="text"]').value);
+            subtotal += price * quantity;
         });
 
-        // Update total UI element if you have one
-        const totalElement = document.querySelector('.pos-total-price');
-        if (totalElement) {
+        // Calculate tax and total
+        const tax = subtotal * taxRate;
+        const total = subtotal + tax;
+
+        // Update UI elements for totals
+        const subtotalElement = document.querySelector('.pos-sidebar-footer .d-flex:nth-child(1) .text-end');
+        const taxElement = document.querySelector('.pos-sidebar-footer .d-flex:nth-child(2) .text-end');
+        const totalElement = document.querySelector('.pos-sidebar-footer .d-flex:nth-child(4) .text-end');
+
+        if (subtotalElement && taxElement && totalElement) {
+            subtotalElement.textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(subtotal);
+            taxElement.textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(tax);
             totalElement.textContent = 'Rp' + new Intl.NumberFormat('id-ID').format(total);
+        }
+    }
+
+    function updateOrderCount() {
+        // Count number of items in order
+        const orderItems = document.querySelectorAll('#newOrderTab .pos-order');
+        const count = orderItems.length;
+
+        // Update count in tab
+        const tabElement = document.querySelector('a[data-bs-target="#newOrderTab"]');
+        if (tabElement) {
+            tabElement.textContent = `New Order (${count})`;
+        }
+
+        // Update count in mobile toggler
+        const togglerElement = document.querySelector('.pos-mobile-sidebar-toggler .badge');
+        if (togglerElement) {
+            togglerElement.textContent = count;
         }
     }
 </script>
