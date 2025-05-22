@@ -632,6 +632,42 @@
         // Get all order items except those that are part of a confirmation view
         const orderItems = document.querySelectorAll('#newOrderTab .pos-order:not(:has(.pos-order-confirmation))');
         orderItems.forEach(item => item.remove());
+
+        // Show empty state after clearing
+        showEmptyOrderState();
+    }
+
+    // Show empty state when no orders exist
+    function showEmptyOrderState() {
+        const newOrderTab = document.getElementById('newOrderTab');
+        const existingOrders = newOrderTab.querySelectorAll('.pos-order');
+        const existingEmptyState = newOrderTab.querySelector('.empty-order-state');
+
+        if (existingOrders.length === 0 && !existingEmptyState) {
+            const emptyStateHTML = `
+            <div class="empty-order-state h-100 d-flex align-items-center justify-content-center text-center p-20">
+                <div>
+                    <div class="mb-3 mt-n5">
+                        <svg width="6em" height="6em" viewBox="0 0 16 16" class="text-gray-300" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M14 5H2v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5zM1 4v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4H1z" />
+                            <path d="M8 1.5A2.5 2.5 0 0 0 5.5 4h-1a3.5 3.5 0 1 1 7 0h-1A2.5 2.5 0 0 0 8 1.5z" />
+                        </svg>
+                    </div>
+                    <h5>No order found</h5>
+                    <p class="text-muted small">Add items to your cart to start an order</p>
+                </div>
+            </div>
+        `;
+            newOrderTab.insertAdjacentHTML('beforeend', emptyStateHTML);
+        }
+    }
+
+    // Hide empty state when orders exist
+    function hideEmptyOrderState() {
+        const emptyState = document.querySelector('#newOrderTab .empty-order-state');
+        if (emptyState) {
+            emptyState.remove();
+        }
     }
 
     // Update the price in the modal based on selected options
@@ -741,6 +777,9 @@
 
             // Append to order container
             document.querySelector('#newOrderTab').insertAdjacentHTML('beforeend', orderHTML);
+
+            // Hide empty state since we now have items
+            hideEmptyOrderState();
         }
 
         // Update totals
@@ -827,6 +866,9 @@
                 orderItem.remove();
                 updateOrderTotal();
                 updateOrderCount();
+
+                // Check if we need to show empty state
+                checkAndShowEmptyState();
             });
         }
     }
@@ -848,6 +890,9 @@
                 orderItem.remove();
                 updateOrderTotal();
                 updateOrderCount();
+
+                // Check if we need to show empty state
+                checkAndShowEmptyState();
             });
         });
     }
@@ -1003,6 +1048,7 @@
 
     function clearOrder() {
         // Remove all order items
+        clearExistingOrderItems();
         const orderItems = document.querySelectorAll('#newOrderTab .pos-order');
         orderItems.forEach(item => item.remove());
 

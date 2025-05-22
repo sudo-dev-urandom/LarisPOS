@@ -46,9 +46,4 @@ class Transaction extends Model
         return $this->hasMany(TransactionItem::class);
     }
 
-    // Legacy relationship for backward compatibility
-    public function inventory(): BelongsTo
-    {
-        return $this->belongsTo(Inventory::class);
-    }
 }
