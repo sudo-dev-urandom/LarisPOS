@@ -2,44 +2,52 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Transaction extends Model
 {
     use HasFactory;
 
-    public $incrementing = false;
-    protected $keyType = 'string';
-
     protected $fillable = [
         'id',
         'invoice_number',
         'cashier_id',
-        'inventory_id',
-        'total_price',
+        'subtotal',
         'tax',
-        'total_price_tax',
+        'total_price',
         'payment_method',
+        'table_number',
+        'order_number',
         'is_paid',
+        'transaction_date',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            $model->id = (string) Str::uuid();
-            $model->invoice_number = 'LRPS' . random_int(100000, 999999);
-        });
-    }
+    protected $keyType = 'string';
+    public $incrementing = false;
 
-    public function cashier()
+    protected $casts = [
+        'subtotal' => 'decimal:2',
+        'tax' => 'decimal:2',
+        'total_price' => 'decimal:2',
+        'is_paid' => 'boolean',
+        'transaction_date' => 'datetime',
+    ];
+
+    public function cashier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'cashier_id');
     }
 
-    public function inventory()
+    public function transactionItems(): HasMany
+    {
+        return $this->hasMany(TransactionItem::class);
+    }
+
+    // Legacy relationship for backward compatibility
+    public function inventory(): BelongsTo
     {
         return $this->belongsTo(Inventory::class);
     }

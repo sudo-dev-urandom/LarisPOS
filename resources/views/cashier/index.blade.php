@@ -1,5 +1,6 @@
 @extends('partials.dashboard')
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- BEGIN #app -->
 <div id="app" class="app app-content-full-height app-without-sidebar app-without-header">
     <!-- BEGIN #content -->
@@ -375,7 +376,7 @@
                                         <i class="bi bi-receipt fa-fw fa-lg"></i><br>
                                         <span class="small">Bill</span>
                                     </a>
-                                    <a href="#" class="btn btn-outline-theme rounded-0 w-150px">
+                                    <a href="#" id="submitOrderBtn" class="btn btn-outline-theme rounded-0 w-150px">
                                         <i class="bi bi-send-check fa-lg"></i><br>
                                         <span class="small">Submit Order</span>
                                     </a>
@@ -894,6 +895,162 @@
         if (togglerElement) {
             togglerElement.textContent = count;
         }
+    }
+
+    // Handle Submit Order button click
+    document.addEventListener('DOMContentLoaded', function() {
+        // Find the Submit Order button and add event listener
+        const submitOrderBtn = document.querySelector('a[href="#"]:has(.bi-send-check)');
+        if (submitOrderBtn) {
+            submitOrderBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                submitOrder();
+            });
+        }
+    });
+
+    function submitOrder() {
+        // Get all order items
+        const orderItems = document.querySelectorAll('#newOrderTab .pos-order');
+
+        if (orderItems.length === 0) {
+            alert('No items in order. Please add items before submitting.');
+            return;
+        }
+
+        // Prepare order data
+        const items = [];
+        let subtotal = 0;
+
+        orderItems.forEach(item => {
+            const inventoryId = item.getAttribute('data-id');
+            const quantity = parseInt(item.getAttribute('data-quantity') || item.querySelector('input[type="text"]').value);
+            const unitPrice = parseFloat(item.getAttribute('data-price'));
+            const totalPrice = unitPrice * quantity;
+
+            // Get options from the item display
+            const optionsElement = item.querySelector('.small.mb-2');
+            const options = optionsElement ? optionsElement.innerHTML.replace(/<br>/g, ', ') : '';
+
+            items.push({
+                inventory_id: inventoryId,
+                quantity: quantity,
+                unit_price: unitPrice,
+                total_price: totalPrice,
+                options: options
+            });
+
+            subtotal += totalPrice;
+        });
+
+        // Calculate tax and total
+        const taxRate = 0.06; // 6% tax rate
+        const tax = subtotal * taxRate;
+        const total = subtotal + tax;
+
+        // Get table and order information
+        const tableNumber = document.querySelector('.pos-sidebar-header .title')?.textContent || 'Table 01';
+        const orderNumber = document.querySelector('.pos-sidebar-header .order b')?.textContent || '#0056';
+
+        // Prepare the complete order data
+        const orderData = {
+            items: items,
+            subtotal: subtotal,
+            tax: tax,
+            total: total,
+            payment_method: 'cash', // Default to cash, you can add payment method selection
+            table_number: tableNumber,
+            order_number: orderNumber,
+            _token: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        };
+
+        // Show loading state
+        const originalText = submitOrderBtn.innerHTML;
+        submitOrderBtn.innerHTML = '<i class="bi bi-hourglass-split fa-lg"></i><br><span class="small">Processing...</span>';
+        submitOrderBtn.style.pointerEvents = 'none';
+
+        // Submit the order
+        fetch('/transactions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': orderData._token
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Success - show confirmation and clear order
+                    alert(`Order submitted successfully!\nInvoice: ${data.invoice_number}`);
+                    clearOrder();
+                } else {
+                    // Error handling
+                    alert('Error submitting order: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting order. Please try again.');
+            })
+            .finally(() => {
+                // Reset button state
+                submitOrderBtn.innerHTML = originalText;
+                submitOrderBtn.style.pointerEvents = 'auto';
+            });
+    }
+
+    function clearOrder() {
+        // Remove all order items
+        const orderItems = document.querySelectorAll('#newOrderTab .pos-order');
+        orderItems.forEach(item => item.remove());
+
+        // Update totals and counts
+        updateOrderTotal();
+        updateOrderCount();
+
+        // Generate new order number
+        const newOrderNumber = '#' + Math.floor(Math.random() * 9000 + 1000).toString().padStart(4, '0');
+        const orderElement = document.querySelector('.pos-sidebar-header .order b');
+        if (orderElement) {
+            orderElement.textContent = newOrderNumber;
+        }
+    }
+
+    // Optional: Add payment method selection
+    function showPaymentMethodModal() {
+        // You can create a modal to select payment method before submitting
+        // For now, we'll use a simple prompt
+        const paymentMethods = ['cash', 'card', 'digital_wallet'];
+        const selectedMethod = prompt('Select payment method:\n1. Cash\n2. Card\n3. Digital Wallet\n\nEnter 1, 2, or 3:');
+
+        switch (selectedMethod) {
+            case '1':
+                return 'cash';
+            case '2':
+                return 'card';
+            case '3':
+                return 'digital_wallet';
+            default:
+                return 'cash';
+        }
+    }
+
+    // Enhanced submit order with payment method selection
+    function submitOrderWithPaymentSelection() {
+        const orderItems = document.querySelectorAll('#newOrderTab .pos-order');
+
+        if (orderItems.length === 0) {
+            alert('No items in order. Please add items before submitting.');
+            return;
+        }
+
+        // Get payment method
+        const paymentMethod = showPaymentMethodModal();
+
+        // Continue with the rest of the submit order logic...
+        // (Use the same logic as submitOrder() but with the selected payment method)
     }
 </script>
 @endpush

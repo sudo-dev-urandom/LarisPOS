@@ -18,6 +18,7 @@ Route::middleware(['auth', 'role:cashier'])->group(function () {
     Route::resource('inventories', InventoryController::class);
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
 });
 
 Route::get('/', function () {
