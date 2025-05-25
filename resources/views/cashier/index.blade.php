@@ -195,11 +195,11 @@
                         <div class="pos-sidebar-nav">
                             <ul class="nav nav-tabs nav-fill">
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="#" data-bs-toggle="tab" data-bs-target="#newOrderTab">New Order (5)</a>
+                                    <a class="nav-link active" href="#" data-bs-toggle="tab" data-bs-target="#newOrderTab">Item Order (5)</a>
                                 </li>
-                                <li class="nav-item">
+                                <!-- <li class="nav-item">
                                     <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#orderHistoryTab">Order History (0)</a>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                         <!-- END pos-sidebar-nav -->
@@ -932,7 +932,7 @@
         // Update count in tab
         const tabElement = document.querySelector('a[data-bs-target="#newOrderTab"]');
         if (tabElement) {
-            tabElement.textContent = `New Order (${count})`;
+            tabElement.textContent = `Item Order (${count})`;
         }
 
         // Update count in mobile toggler
