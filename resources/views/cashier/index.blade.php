@@ -1029,6 +1029,21 @@
                 if (data.success) {
                     // Success - show confirmation and clear order
                     alert(`Order submitted successfully!\nInvoice: ${data.invoice_number}`);
+                    const orderItemsWithNames = [];
+                    orderData.items.forEach(item => {
+                        const orderElement = document.querySelector(`.pos-order[data-id="${item.inventory_id}"]`);
+                        orderItemsWithNames.push({
+                            ...item,
+                            name: orderElement.querySelector('.h6.mb-1').textContent
+                        });
+                    });
+
+                    // Update orderData with named items
+                    orderData.items = orderItemsWithNames;
+
+                    // Generate and show receipt
+                    const receiptHTML = generateReceipt(orderData, data.invoice_number);
+                    showReceiptModal(receiptHTML);
                     clearOrder();
                 } else {
                     // Error handling
@@ -1097,6 +1112,134 @@
 
         // Continue with the rest of the submit order logic...
         // (Use the same logic as submitOrder() but with the selected payment method)
+    }
+
+    // Generate receipt HTML
+    function generateReceipt(orderData, invoiceNumber) {
+        const date = new Date().toLocaleString();
+        let receiptHTML = `
+        <div class="receipt-container">
+            <div class="text-center mb-3">
+                <h3>Laris POS</h3>
+                <p class="mb-0">Invoice #${invoiceNumber}</p>
+                <p class="mb-0">${date}</p>
+                <p class="mb-0">${orderData.table_number}</p>
+            </div>
+            <div class="receipt-items mb-3">
+                <table class="w-100">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th class="text-end">Qty</th>
+                            <th class="text-end">Price</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orderData.items.map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td class="text-end">${item.quantity}</td>
+                                <td class="text-end">Rp${new Intl.NumberFormat('id-ID').format(item.unit_price)}</td>
+                                <td class="text-end">Rp${new Intl.NumberFormat('id-ID').format(item.total_price)}</td>
+                            </tr>
+                            ${item.options ? `<tr><td colspan="4" class="small">${item.options}</td></tr>` : ''}
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="receipt-summary">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Subtotal:</span>
+                    <span>Rp${new Intl.NumberFormat('id-ID').format(orderData.subtotal)}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Tax (6%):</span>
+                    <span>Rp${new Intl.NumberFormat('id-ID').format(orderData.tax)}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1 fw-bold">
+                    <span>Total:</span>
+                    <span>Rp${new Intl.NumberFormat('id-ID').format(orderData.total)}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Payment Method:</span>
+                    <span>${orderData.payment_method.toUpperCase()}</span>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <p class="mb-0">Thank you for your purchase!</p>
+                <p class="mb-0">Please come again</p>
+            </div>
+        </div>
+    `;
+        return receiptHTML;
+    }
+
+    function showReceiptModal(receiptHTML) {
+        const modalHTML = `
+        <div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Receipt</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ${receiptHTML}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-default" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-outline-theme" onclick="printReceipt()">Print</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        // Remove existing modal if any
+        const existingModal = document.getElementById('receiptModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Add new modal to body
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('receiptModal'));
+        modal.show();
+    }
+
+    function printReceipt() {
+        const receiptContent = document.querySelector('.receipt-container').innerHTML;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+        <html>
+            <head>
+                <title>Print Receipt</title>
+                <style>
+                    body { font-family: monospace; font-size: 12px; }
+                    .text-end { text-align: right; }
+                    .text-center { text-align: center; }
+                    .mb-0 { margin-bottom: 0; }
+                    .mb-1 { margin-bottom: 0.25rem; }
+                    .mb-3 { margin-bottom: 1rem; }
+                    .mt-3 { margin-top: 1rem; }
+                    .w-100 { width: 100%; }
+                    .fw-bold { font-weight: bold; }
+                    table { border-collapse: collapse; width: 100%; }
+                    th, td { padding: 4px; text-align: left; }
+                    .small { font-size: 10px; }
+                </style>
+            </head>
+            <body>
+                ${receiptContent}
+            </body>
+        </html>
+    `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
     }
 </script>
 @endpush
