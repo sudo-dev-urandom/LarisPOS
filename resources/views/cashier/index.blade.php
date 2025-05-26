@@ -368,14 +368,14 @@
                             </div>
                             <div class="mt-3">
                                 <div class="btn-group d-flex">
-                                    <a href="#" class="btn btn-outline-default rounded-0 w-80px">
+                                    <!-- <a href="#" class="btn btn-outline-default rounded-0 w-80px">
                                         <i class="bi bi-bell fa-lg"></i><br>
                                         <span class="small">Service</span>
                                     </a>
                                     <a href="#" class="btn btn-outline-default rounded-0 w-80px">
                                         <i class="bi bi-receipt fa-fw fa-lg"></i><br>
                                         <span class="small">Bill</span>
-                                    </a>
+                                    </a> -->
                                     <a href="#" id="submitOrderBtn" class="btn btn-outline-theme rounded-0 w-150px">
                                         <i class="bi bi-send-check fa-lg"></i><br>
                                         <span class="small">Submit Order</span>
