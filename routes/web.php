@@ -11,7 +11,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Protected routes by role
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', fn() => view('admin.dashboard'));
+    Route::get('/admin/dashboard', fn() => view('admin.index'));
 });
 
 Route::middleware(['auth', 'role:cashier'])->group(function () {

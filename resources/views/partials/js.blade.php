@@ -3,4 +3,5 @@
 <script src="{{ asset('assets/js/app.min.js') }}"></script>
 <!-- ================== END core-js ================== -->
 @stack('pos')
+@stack('dashboard')
 
