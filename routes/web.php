@@ -12,6 +12,10 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Protected routes by role
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', fn() => view('admin.index'));
+    // Route::get('/admin/transactions', fn() => view('admin.transactions'));
+    Route::get('/admin/transactions', [TransactionController::class, 'index'])->name('admin.transactions');
+    Route::get('/admin/inventories', fn() => view('admin.inventories'));
+    Route::get('/admin/cashier', fn() => view('admin.cashier'));
 });
 
 Route::middleware(['auth', 'role:cashier'])->group(function () {

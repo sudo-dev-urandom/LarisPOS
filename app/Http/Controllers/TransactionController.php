@@ -13,8 +13,8 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with(['cashier', 'transactionItems.inventory'])->latest()->get();
-        return view('transactions.index', compact('transactions'));
+        $transactions = Transaction::with(['cashier'])->latest()->get();
+        return view('admin.transactions', compact('transactions'));
     }
 
     public function store(Request $request)

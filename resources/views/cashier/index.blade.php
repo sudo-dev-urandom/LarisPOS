@@ -523,7 +523,7 @@
 @stop
 
 
-@push('pos')
+@push('js')
 <script src="{{ asset('assets/js/demo/pos-customer-order.demo.js') }}"></script>
 <script>
     // Store current product details

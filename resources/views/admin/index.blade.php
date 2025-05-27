@@ -565,7 +565,7 @@
 </div>
 <!-- END #content -->
 @stop
-@push('dashboard')
+@push('js')
 <script src="{{ asset('assets/plugins/apexcharts/dist/apexcharts.min.js') }}"></script>
 <script src="{{ asset('assets/js/demo/dashboard.demo.js') }}"></script>
 @endpush
