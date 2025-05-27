@@ -13,7 +13,7 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with(['cashier'])->latest()->get();
+        $transactions = Transaction::with(['cashier'])->orderBy('transaction_date', 'desc')->get();
         return view('admin.transactions', compact('transactions'));
     }
 

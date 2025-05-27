@@ -16,27 +16,26 @@
                     <div class="col-xl-12">
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="#">TABLES</a></li>
-                            <li class="breadcrumb-item active">TABLE PLUGINS</li>
+                            <li class="breadcrumb-item active">TABLE TRANSACTIONS</li>
                         </ul>
 
                         <h1 class="page-header">
-                            Table Plugins <small>page header description goes here...</small>
+                            Transactions <small>By Today</small>
                         </h1>
 
                         <hr class="mb-4">
 
                         <!-- BEGIN #datatable -->
                         <div id="datatable" class="mb-5">
-                            <h4>Datatable</h4>
-                            <p>DataTables is a plug-in for the jQuery Javascript library. It is a highly flexible tool, built upon the foundations of progressive enhancement, that adds all of these advanced features to any HTML table. Please read the <a href="https://datatables.net/" target="_blank">official documentation</a> for the full list of options.</p>
                             <div class="card">
                                 <div class="card-body">
                                     <table id="datatableDefault" class="table text-nowrap w-100">
                                         <thead>
                                             <tr>
+
                                                 <th>#Invoice</th>
-                                                <th>Cashier</th>
                                                 <th>Transaction Date</th>
+                                                <th>Cashier</th>
                                                 <th>Payment Method</th>
                                                 <th>Total</th>
                                                 <th>Tax</th>
@@ -45,15 +44,16 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($transactions as $value)
-                                                <tr>
-                                                    <td>{{ $value->invoice_number}}</td>
-                                                    <td>{{ $value->cashier->name }}</td>
-                                                    <td>{{ $value->transaction_date}}</td>
-                                                    <td>{{ $value->payment_method }}</td>
-                                                    <td>{{ format_currency($value->total_price) }}</td>
-                                                    <td>{{ format_currency($value->tax) }}</td>
-                                                    <td>{{ format_currency($value->subtotal) }}</td>
-                                                </tr>
+                                            <tr>
+
+                                                <td>{{ $value->invoice_number}}</td>
+                                                <td>{{ $value->transaction_date}}</td>
+                                                <td>{{ $value->cashier->name }}</td>
+                                                <td>{{ $value->payment_method }}</td>
+                                                <td>{{ format_currency($value->total_price) }}</td>
+                                                <td>{{ format_currency($value->tax) }}</td>
+                                                <td>{{ format_currency($value->subtotal) }}</td>
+                                            </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
