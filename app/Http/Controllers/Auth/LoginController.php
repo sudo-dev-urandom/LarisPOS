@@ -37,7 +37,7 @@ class LoginController extends Controller
 
             return match ($user->level) {
                 'admin' => redirect()->intended('/admin/dashboard'),
-                'cashier' => redirect()->intended('/inventories'),
+                'cashier' => redirect()->intended('/pos'),
                 default => redirect()->intended('/'),
             };
         }

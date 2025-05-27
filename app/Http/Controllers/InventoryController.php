@@ -10,6 +10,12 @@ class InventoryController extends Controller
     public function index()
     {
         $inventories = Inventory::all();
+        return view('admin.inventories', compact('inventories'));
+    }
+
+    public function cashier()
+    {
+        $inventories = Inventory::all();
         return view('cashier.index', compact('inventories'));
     }
 

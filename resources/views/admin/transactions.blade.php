@@ -1,7 +1,15 @@
 @extends('partials.dashboard-admin')
+
+@push('head')
+<!-- ================== BEGIN page-css ================== -->
+<link href="{{ asset('assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/plugins/bootstrap-table/dist/bootstrap-table.min.css') }}" rel="stylesheet">
+<!-- ================== END page-css ================== -->
+@endpush
+
 @section('content')
-
-
 <!-- BEGIN #content -->
 <div id="content" class="app-content">
     <!-- BEGIN container -->
@@ -20,7 +28,7 @@
                         </ul>
 
                         <h1 class="page-header">
-                            Transactions <small>By Today</small>
+                            Transactions <small>By This Month</small>
                         </h1>
 
                         <hr class="mb-4">
@@ -77,15 +85,6 @@
 </div>
 <!-- END #content -->
 @stop
-
-@push('head')
-<!-- ================== BEGIN page-css ================== -->
-<link href="{{ asset('assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
-<link href="{{ asset('assets/plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet">
-<link href="{{ asset('assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet">
-<link href="{{ asset('assets/plugins/bootstrap-table/dist/bootstrap-table.min.css') }}" rel="stylesheet">
-<!-- ================== END page-css ================== -->
-@endpush
 
 @push('js')
 <script src="{{ asset('assets/plugins/@highlightjs/cdn-assets/highlight.min.js') }}"></script>
