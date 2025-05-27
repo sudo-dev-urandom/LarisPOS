@@ -16,6 +16,7 @@ class InventoryController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
+            'sku' => 'required|string',
             'name' => 'required|string',
             'tags' => 'nullable|string',
             'price' => 'required|numeric',
