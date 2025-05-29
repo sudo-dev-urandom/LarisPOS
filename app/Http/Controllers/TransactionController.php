@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inventory;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Illuminate\Http\Request;
@@ -52,7 +53,7 @@ class TransactionController extends Controller
                 'transaction_date' => now(),
             ]);
 
-            // Create transaction items
+            // Create transaction items and update inventory stocks
             foreach ($validated['items'] as $item) {
                 TransactionItem::create([
                     'id' => (string) Str::uuid(),
@@ -63,6 +64,11 @@ class TransactionController extends Controller
                     'total_price' => $item['total_price'],
                     'options' => $item['options'] ?? null,
                 ]);
+
+                // Update inventory stock
+                $inventory = Inventory::find($item['inventory_id']);
+                $inventory->stocks -= $item['quantity'];
+                $inventory->save();
             }
 
             DB::commit();
